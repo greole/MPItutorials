@@ -35,10 +35,16 @@ MPItutorials/
 ├── 02-collectives/
 │   ├── broadcast.cpp          # MPI_Bcast: root rank broadcasts its rank to all
 │   └── broadcast_reduce.cpp   # MPI_Bcast + MPI_Reduce: broadcast then sum to rank 0
-└── 03-point-to-point/
-    ├── send_recv.cpp           # MPI_Send/MPI_Recv: rank 0 sends a value to rank 1
-    ├── ping_pong.cpp           # Blocking send/recv round-trips between rank 0 and 1
-    └── ring.cpp                # MPI_Sendrecv: each rank passes its rank around a ring
+├── 03-point-to-point/
+│   ├── send_recv.cpp           # MPI_Send/MPI_Recv: rank 0 sends a value to rank 1
+│   ├── ping_pong.cpp           # Blocking send/recv round-trips between rank 0 and 1
+│   └── ring.cpp                # MPI_Sendrecv: each rank passes its rank around a ring
+├── 04-advanced-collectives/
+│   ├── alltoallv.cpp           # MPI_Alltoallv: rank i sends (i+1) ints to every rank
+│   └── alltoallv_gather.cpp    # MPI_Alltoall + MPI_Alltoallv: redistribute by (e % size)
+└── 05-non-blocking/
+    ├── isend_irecv.cpp         # MPI_Isend/MPI_Irecv + MPI_Waitall: ring pass with overlap
+    └── ialltoallv.cpp          # MPI_Ialltoallv + MPI_Wait: alltoallv with overlap
 ```
 
 ## Examples
@@ -93,4 +99,40 @@ Each rank sends its own rank to the next process and receives from the previous 
 
 ```sh
 mpirun -n 4 build/03-point-to-point/ring
+```
+
+### 04 — Advanced Collectives
+
+#### Alltoallv
+
+Rank i sends `(i+1)` integers to every other rank (variable send counts). Each value encodes its origin and destination: `rank*100 + dest*10 + element_index`.
+
+```sh
+mpirun -n 4 build/04-advanced-collectives/alltoallv
+```
+
+#### Alltoallv — Redistribute by modulo
+
+Rank i starts with `(i+1)` consecutive integers. `MPI_Alltoall` exchanges the per-rank send counts; `MPI_Alltoallv` redistributes the data so that element `e` ends up on rank `e % size`.
+
+```sh
+mpirun -n 4 build/04-advanced-collectives/alltoallv_gather
+```
+
+### 05 — Non-Blocking
+
+#### Isend / Irecv
+
+Non-blocking ring pass: each rank posts `MPI_Irecv` and `MPI_Isend`, does local work while messages are in flight, then calls `MPI_Waitall`.
+
+```sh
+mpirun -n 4 build/05-non-blocking/isend_irecv
+```
+
+#### Ialltoallv
+
+Same variable-count layout as `04-advanced-collectives/alltoallv`, but initiated with `MPI_Ialltoallv`. Local work runs between the init call and `MPI_Wait`; the interleaved output shows the overlap.
+
+```sh
+mpirun -n 4 build/05-non-blocking/ialltoallv
 ```
