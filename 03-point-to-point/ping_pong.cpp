@@ -8,12 +8,8 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    if (size < 2) {
-        if (rank == 0)
-            fprintf(stderr, "Error: need at least 2 processes\n");
-        MPI_Finalize();
-        return 1;
-    }
+    // TODO implement check if size is == 2 
+    // exit otherwise
 
     const int rounds = 4;
     int value = 0;

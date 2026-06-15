@@ -25,9 +25,11 @@ int main(int argc, char** argv) {
     }
 
     int value = (rank == root) ? rank : -1;
-    MPI_Bcast(&value, 1, MPI_INT, root, MPI_COMM_WORLD);
 
-    printf("Rank %d received: %d\n", rank, value);
+    // TODO implement
+    // int MPI_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
+    // here see https://rookiehpc.org/mpi/docs/mpi_bcast/index.html  for details
+    // printf("Rank %d received: %d\n", rank, value);
 
     MPI_Finalize();
     return 0;

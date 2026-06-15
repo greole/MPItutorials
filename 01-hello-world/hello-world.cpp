@@ -4,11 +4,12 @@
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
 
-    int rank, size;
+    int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    // TODO implement MPI_Comm_size
 
-    printf("Hello world from rank %d/%d\n", rank, size);
+    // TODO add %d size to prinft
+    printf("Hello world from rank %d\n", rank);
 
     MPI_Finalize();
     return 0;
